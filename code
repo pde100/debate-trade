@@ -1,0 +1,72 @@
+function debateTrade() 
+{
+    var ss = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var lr = ss.getLastRow();  
+    for(var a = 2;a<=lr;a=a+1)
+    {
+    for(var b = a+1;b <= lr; b = b+1)
+    {
+           
+       if((ss.getRange(a,4).getValue()==ss.getRange(b,4).getValue())&&(ss.getRange(a,3).getValue()==ss.getRange(b,2).getValue()))
+       {
+         var sender=ss.getRange(a,2).getValue();
+         var recipient=ss.getRange(a,3).getValue();
+         var prep1=ss.getRange(a,5).getValue();
+         
+         MailApp.sendEmail(recipient,"Your Prep is Here from "+sender+"", ""+prep1+"");
+
+         var array1 = [{}];
+         var string1 = prep1;
+         array1 = string1.split(",");
+         
+         
+         for(var i = 0;i<array1.length;i++)
+         {
+         var url = ""+array1[i];
+         var id = getIdFromUrl(url);
+         DriveApp.getFileById(id).addEditor(recipient);
+         }
+         
+         if(prep1.indexOf(",")==-1)
+         {
+         var url = prep1;
+         var id = getIdFromUrl(url);
+         DriveApp.getFileById(id).addEditor(recipient); 
+         }
+
+         var sender2=recipient;
+         var recipient2=sender;
+         var prep2=ss.getRange(b,5).getValue();
+         
+         MailApp.sendEmail(recipient2,"Your Prep is Here from "+sender2+"", ""+prep2+"");
+         
+         var array2 = [{}];
+         var string2 = prep2;
+         array2 = string2.split(",");
+         
+         for(var i = 0;i<array2.length;i++)
+         {
+         var url2 = ""+array2[i];
+         var id2 = getIdFromUrl(url2);
+         DriveApp.getFileById(id2).addEditor(recipient2);
+         }
+         
+         if(prep2.indexOf(",")==-1)
+         {
+         var url2 = prep2;
+         var id2 = getIdFromUrl(url2);
+         DriveApp.getFileById(id2).addEditor(recipient2); 
+         }
+           
+         ss.deleteRow(a);
+         ss.deleteRow(b-1);
+         lr = ss.getLastRow();
+       }
+           
+    }
+    }
+}
+
+function getIdFromUrl(url) { return url.match(/[-\w]{25,}/); }
+
+
